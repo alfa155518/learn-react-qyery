@@ -1,1 +1,1 @@
-# LEarn React Query 
+# Learn React Query 
