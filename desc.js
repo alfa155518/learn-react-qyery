@@ -12,12 +12,12 @@
 // status: 'pending'
 // isPending: true
 // fetchStatus: 'idle'
-// As soon as the user is available, the projects query will be enabled and will then transition to:
+// As soon as the comments is available, the Comments query will be enabled and will then transition to:
 //! In Second
 // status: 'pending'
 // isPending: true
 // fetchStatus: 'fetching'
-// Once we have the projects, it will go to:
+// Once we have the comments, it will go to:
 //! In Third
 // status: 'success'
 // isPending: false
