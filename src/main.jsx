@@ -8,7 +8,11 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 const queryClient = new QueryClient()
 createRoot(document.getElementById('root')).render(
 
-  <QueryClientProvider client={queryClient}>
+  <QueryClientProvider client={queryClient} defaultOptions={{
+    queries: {
+      // refetchOnWindowFocus: false,
+    },
+  }}>
     <App />
     <ReactQueryDevtools initialIsOpen={false} />
   </QueryClientProvider>

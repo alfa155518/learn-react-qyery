@@ -1,9 +1,8 @@
 import { useQuery } from "@tanstack/react-query"
-import { useState } from "react";
+
 
 export default function App() {
 
-  const [postId, setPostId] = useState(null);
 
   // Get Post Function
   async function getPost() {
@@ -18,30 +17,31 @@ export default function App() {
   }
 
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isFetching, isError } = useQuery({
     queryKey: ['ClientPosts'],
-    queryFn: async () => await getPost()
+    queryFn: async () => await getPost(),
+    // refetchOnWindowFocus: false,
+    retry: 5
   })
 
 
-  setTimeout(() => {
-    setPostId(1);
-  }, 3000);
 
-
-  const { data: commentsData, isPending } = useQuery({
+  const { data: commentsData, refetch } = useQuery({
     queryKey: ['ClientComments'],
     queryFn: async () => await getComments(),
-    enabled: !!postId,
+    // Disabling/Pausing Queries
+    enabled: false
   })
 
 
   if (isLoading) {
     return <div>Loading...</div>
   }
+  if (isError) {
+    return <div>Ther is Error...</div>
+  }
 
 
-  console.log(commentsData)
 
   return (
     <>
@@ -56,8 +56,10 @@ export default function App() {
       }
       <div>
         {
-          isPending ? <div>Loading comments...</div> : commentsData?.map(comment => <p key={comment.id}>{comment.text}</p>)
+          isFetching ? <div>Loading comments...</div> : commentsData?.map(comment => <p key={comment.id}>{comment.text}</p>)
         }
+        {/* Show When use Disabling/Pausing Queries*/}
+        <button onClick={() => refetch()}>Refetch</button>
       </div>
     </>
   )
