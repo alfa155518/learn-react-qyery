@@ -14,28 +14,27 @@ export default function App() {
     queryFn: async () => await getPost(),
   })
 
-  const { mutate, isPending, isError: mutationIsError, isSuccess, reset } = useMutation({
+  const { mutateAsync, isPending, isError: mutationIsError, isSuccess, reset } = useMutation({
     mutationFn: createPost,
-    onSuccess: () => {
-      refetch();
-      setNewPostTitle("")
-      setNewPostViews("")
-      reset();
-    },
-    onError: (error) => {
-      alert('Error creating post: ' + error.message);
-    },
   })
 
 
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (newPostTitle.trim() && newPostViews.trim()) {
-      mutate({
-        title: newPostTitle,
-        views: parseInt(newPostViews)
-      })
+      try {
+        await mutateAsync({
+          title: newPostTitle,
+          views: parseInt(newPostViews)
+        });
+        refetch();
+        setNewPostTitle("")
+        setNewPostViews("")
+        reset();
+      } catch (error) {
+        alert('Mutation failed: ' + error.message);
+      }
     }
   }
 
