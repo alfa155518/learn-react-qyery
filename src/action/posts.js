@@ -16,4 +16,22 @@ async function createPost(post) {
     return response.json()
 }
 
-export { getPost, createPost };
+// Get Comments Function
+async function getComments() {
+    const response = await fetch(`http://localhost:3000/comments`)
+    return response.json()
+}
+
+// Create Comment Function
+async function createComment(comment) {
+    const response = await fetch(`http://localhost:3000/comments`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(comment)
+    })
+    return response.json()
+}
+
+export { getPost, createPost, getComments, createComment };

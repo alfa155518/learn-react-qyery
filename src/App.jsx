@@ -1,21 +1,63 @@
-import { useQuery, useMutation } from "@tanstack/react-query"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
+import { createPost, getComments, getPost, createComment } from "./action/posts"
 import "./App.css"
-import { createPost, getPost } from "./action/posts"
 
 
 
 export default function App() {
   const [newPostTitle, setNewPostTitle] = useState("")
   const [newPostViews, setNewPostViews] = useState("")
+  const [newCommentText, setNewCommentText] = useState("")
+  const [selectedPostId, setSelectedPostId] = useState(null)
+  const queryClient = useQueryClient()
 
-  const { data, isLoading, isError, refetch } = useQuery({
+
+
+
+  // queryClient.invalidateQueries()
+
+  const { data, isLoading, isError } = useQuery({
     queryKey: ['ClientPosts'],
     queryFn: async () => await getPost(),
   })
 
-  const { mutateAsync, isPending, isError: mutationIsError, isSuccess, reset } = useMutation({
+  const { data: commentData } = useQuery({
+    queryKey: ['ClientPosts', { type: 'done' }],
+    queryFn: async () => await getComments(),
+  })
+
+
+  const { mutate, isPending, isError: mutationIsError, isSuccess, reset } = useMutation({
     mutationFn: createPost,
+    onSuccess: () => {
+      setNewPostTitle("")
+      setNewPostViews("")
+      reset();
+
+    },
+  })
+
+
+  const commentMutation = useMutation({
+    mutationFn: createComment,
+    onSuccess: () => {
+      setNewCommentText("")
+      setSelectedPostId(null)
+      // queryClient.invalidateQueries({
+      //   queryKey: ['ClientPosts']
+      // })
+      queryClient.invalidateQueries({
+        queryKey: ['ClientPosts'],
+        exact: true,
+      })
+      // queryClient.invalidateQueries({
+      //   queryKey: ['ClientPosts', { type: 'done' }],
+      // })
+    },
+    onError: (error) => {
+      alert('Error creating comment: ' + error.message);
+    },
   })
 
 
@@ -23,19 +65,25 @@ export default function App() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (newPostTitle.trim() && newPostViews.trim()) {
-      try {
-        await mutateAsync({
-          title: newPostTitle,
-          views: parseInt(newPostViews)
-        });
-        refetch();
-        setNewPostTitle("")
-        setNewPostViews("")
-        reset();
-      } catch (error) {
-        alert('Mutation failed: ' + error.message);
-      }
+      mutate({
+        title: newPostTitle,
+        views: parseInt(newPostViews)
+      });
     }
+  }
+
+  const handleCommentSubmit = (e) => {
+    e.preventDefault()
+    if (newCommentText.trim() && selectedPostId) {
+      commentMutation.mutate({
+        text: newCommentText,
+        postId: selectedPostId
+      });
+    }
+  }
+
+  const getCommentsForPost = (postId) => {
+    return commentData?.filter(comment => comment.postId === postId) || []
   }
 
 
@@ -92,15 +140,59 @@ export default function App() {
           <div className="no-posts">No posts available</div>
         ) : (
           <div className="posts-grid">
-            {data.map(post => (
-              <div key={post.id} className="post-card">
-                <h3 className="post-title">{post.title}</h3>
-                <div className="post-views">{post.views} views</div>
-              </div>
-            ))}
+            {data.map(post => {
+              const postComments = getCommentsForPost(post.id)
+              return (
+                <div key={post.id} className="post-card">
+                  <h3 className="post-title">{post.title}</h3>
+                  <div className="post-views">{post.views} views</div>
+                  <div className="post-comments">
+                    <div className="comments-header">
+                      <span className="comments-count">{postComments.length} comments</span>
+                      <button
+                        onClick={() => setSelectedPostId(selectedPostId === post.id ? null : post.id)}
+                        className="add-comment-btn"
+                      >
+                        {selectedPostId === post.id ? 'Cancel' : 'Add Comment'}
+                      </button>
+                    </div>
+
+                    {selectedPostId === post.id && (
+                      <form onSubmit={handleCommentSubmit} className="comment-form">
+                        <input
+                          type="text"
+                          placeholder="Write a comment..."
+                          value={newCommentText}
+                          onChange={(e) => setNewCommentText(e.target.value)}
+                          className="comment-input"
+                        />
+                        <button
+                          type="submit"
+                          disabled={commentMutation.isPending}
+                          className="comment-submit-btn"
+                        >
+                          {commentMutation.isPending ? 'Posting...' : 'Post'}
+                        </button>
+                      </form>
+                    )}
+
+                    {postComments.length > 0 && (
+                      <div className="comments-list">
+                        {postComments.map(comment => (
+                          <div key={comment.id} className="comment-item">
+                            <p className="comment-text">{comment.text}</p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )
+            })}
           </div>
         )}
       </div>
+
     </div>
   )
 }

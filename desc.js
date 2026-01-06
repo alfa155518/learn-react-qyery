@@ -1,26 +1,11 @@
-//? 1-mutateAsync
-// Use mutateAsync instead of mutate to get a promise which will resolve on success or throw on an error. This can for example be used to compose side effects.
+//? 1-Query Invalidation
+// Make query invalid when mutation is successful
+// ! EX:
+// queryClient.invalidateQueries() Invalidate every query in the cache
+// queryKey: ['todos', { page: 1 }], // queries below will be invalidated
+// queryKey: ['todos', { type: 'done' }], // queries below will be invalidated
+// queryClient.invalidateQueries({
+//     queryKey: ['todos'],
+//     exact: true,
+// })  //  only invalidate todos queries that don't have any more variables or subkeys
 
-
-// | mutate                 | mutateAsync         |
-// | ---------------------  | ------------------- |
-// | Doesn't return Promise | Returns Promise     |
-// | Relies on callbacks    | Relies on `await`   |
-// | Suitable for simple buttons | Suitable for complex logic |
-// | No try/catch support   | Supports try/catch  |
-
-
-
-//? 2-Mutation Scopes
-// Per default, all mutations run in parallel - even if you invoke .mutate() of the same mutation multiple times. Mutations can be given a scope with an id to avoid that. All mutations with the same scope.id will run in serial
-
-//* Example:
-// const updateName = useMutation({
-//     mutationFn: updateUserName,
-//     scope: { id: 'user' }
-// })
-
-// const updateEmail = useMutation({
-//     mutationFn: updateUserEmail,
-//     scope: { id: 'user' }
-// })
