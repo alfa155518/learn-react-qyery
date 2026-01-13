@@ -1,4 +1,4 @@
-import { useState } from "react"
+import React from "react"
 
 export default function PostCard({
     post,
@@ -8,38 +8,25 @@ export default function PostCard({
     onAddComment,
     onEditComment,
     onDeleteComment,
-    editingPostId,
-    editingCommentId,
-    editPostTitle,
-    editPostViews,
-    editCommentText,
-    setEditPostTitle,
-    setEditPostViews,
-    setEditCommentText,
-    setEditingPostId,
-    setEditingCommentId,
+    postActions,
     updatePostMutation,
     deletePostMutation,
     updateCommentMutation,
     deleteCommentMutation,
-    selectedPostId,
-    setSelectedPostId,
-    newCommentText,
-    setNewCommentText,
     handleUpdatePost,
     handleUpdateComment,
     handleCommentSubmit
 }) {
     return (
         <div className="post-card">
-            {editingPostId === post.id ? (
+            {postActions.editingPostId === post.id ? (
                 <form onSubmit={handleUpdatePost} className="edit-post-form">
                     <div className="form-group">
                         <input
                             type="text"
                             placeholder="Enter post title"
-                            value={editPostTitle}
-                            onChange={(e) => setEditPostTitle(e.target.value)}
+                            value={postActions.editPostTitle}
+                            onChange={(e) => postActions.setEditPostTitle(e.target.value)}
                             className="form-input"
                         />
                     </div>
@@ -47,8 +34,8 @@ export default function PostCard({
                         <input
                             type="number"
                             placeholder="Enter views"
-                            value={editPostViews}
-                            onChange={(e) => setEditPostViews(e.target.value)}
+                            value={postActions.editPostViews}
+                            onChange={(e) => postActions.setEditPostViews(e.target.value)}
                             className="form-input"
                         />
                     </div>
@@ -62,7 +49,7 @@ export default function PostCard({
                         </button>
                         <button
                             type="button"
-                            onClick={() => setEditingPostId(null)}
+                            onClick={() => postActions.setEditingPostId(null)}
                             className="cancel-btn"
                         >
                             Cancel
@@ -99,20 +86,20 @@ export default function PostCard({
                 <div className="comments-header">
                     <span className="comments-count">{comments.length} comments</span>
                     <button
-                        onClick={() => setSelectedPostId(selectedPostId === post.id ? null : post.id)}
+                        onClick={() => postActions.setSelectedPostId(postActions.selectedPostId === post.id ? null : post.id)}
                         className="add-comment-btn"
                     >
-                        {selectedPostId === post.id ? 'Cancel' : 'Add Comment'}
+                        {postActions.selectedPostId === post.id ? 'Cancel' : 'Add Comment'}
                     </button>
                 </div>
 
-                {selectedPostId === post.id && (
+                {postActions.selectedPostId === post.id && (
                     <form onSubmit={handleCommentSubmit} className="comment-form">
                         <input
                             type="text"
                             placeholder="Write a comment..."
-                            value={newCommentText}
-                            onChange={(e) => setNewCommentText(e.target.value)}
+                            value={postActions.newCommentText}
+                            onChange={(e) => postActions.setNewCommentText(e.target.value)}
                             className="comment-input"
                         />
                         <button
@@ -131,9 +118,7 @@ export default function PostCard({
                             <CommentItem
                                 key={comment.id}
                                 comment={comment}
-                                editingCommentId={editingCommentId}
-                                editCommentText={editCommentText}
-                                setEditCommentText={setEditCommentText}
+                                postActions={postActions}
                                 onEditComment={onEditComment}
                                 onDeleteComment={onDeleteComment}
                                 updateCommentMutation={updateCommentMutation}
@@ -150,10 +135,7 @@ export default function PostCard({
 
 function CommentItem({
     comment,
-    editingCommentId,
-    editCommentText,
-    setEditCommentText,
-    setEditingCommentId,
+    postActions,
     onEditComment,
     onDeleteComment,
     updateCommentMutation,
@@ -162,13 +144,13 @@ function CommentItem({
 }) {
     return (
         <div className="comment-item">
-            {editingCommentId === comment.id ? (
+            {postActions.editingCommentId === comment.id ? (
                 <form onSubmit={handleUpdateComment} className="edit-comment-form">
                     <input
                         type="text"
                         placeholder="Edit comment..."
-                        value={editCommentText}
-                        onChange={(e) => setEditCommentText(e.target.value)}
+                        value={postActions.editCommentText}
+                        onChange={(e) => postActions.setEditCommentText(e.target.value)}
                         className="comment-input"
                     />
                     <div className="edit-buttons">
@@ -181,7 +163,7 @@ function CommentItem({
                         </button>
                         <button
                             type="button"
-                            onClick={() => setEditingCommentId(null)}
+                            onClick={() => postActions.setEditingCommentId(null)}
                             className="cancel-btn"
                         >
                             Cancel

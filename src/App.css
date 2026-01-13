@@ -277,8 +277,6 @@ h2 {
   border: 1px dashed #d1d5db;
 }
 
-<<<<<<< E:\learn-react-query\src\App.css
-=======
 .post-header {
   display: flex;
   justify-content: space-between;
@@ -395,7 +393,6 @@ h2 {
   padding: 2px;
 }
 
->>>>>>> c:\Users\PC\.windsurf\worktrees\learn-react-query\learn-react-query-881784d5\src\App.css
 @media (max-width: 768px) {
   .app {
     padding: 10px;
@@ -413,8 +410,6 @@ h2 {
   h1 {
     font-size: 2rem;
   }
-<<<<<<< E:\learn-react-query\src\App.css
-=======
 
   .post-header {
     flex-direction: column;
@@ -433,5 +428,4 @@ h2 {
   .comment-actions {
     align-self: flex-end;
   }
->>>>>>> c:\Users\PC\.windsurf\worktrees\learn-react-query\learn-react-query-881784d5\src\App.css
 }

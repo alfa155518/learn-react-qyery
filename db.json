@@ -1,86 +1,21 @@
 {
-  "posts": [
-    {
-      "title": "a title0",
-      "views": 100,
-      "id": "1"
-    },
-    {
-      "id": "3",
-      "title": "test-1 title",
-      "views": 200
-    },
-    {
-      "id": "4",
-      "title": "test-2 title",
-      "views": 200
-    },
-    {
-      "id": "5",
-      "title": "test-3 title",
-      "views": 200
-    },
-    {
-      "id": "15dc",
-      "title": "test_4",
-      "views": 600
-    },
-    {
-      "id": "abfa",
-      "title": "test_55",
-      "views": 200
-    },
-    {
-      "id": "19dd",
-      "title": "test_66",
-      "views": 33
-    },
-    {
-      "id": "16b0",
-      "title": "test_99",
-      "views": 66
-    },
-    {
-      "id": "c08c",
-      "title": "test_400",
-      "views": 500
-    }
-  ],
+  "posts": [],
   "comments": [
     {
-      "id": "1",
-      "text": "a comment about post 1",
-      "postId": "1"
+      "text": "commentt-1",
+      "id": "b74e"
     },
     {
-      "id": "2",
-      "text": "another comment about post 1",
-      "postId": "1"
+      "text": "safa",
+      "id": "6042"
     },
     {
-      "id": "966b",
-      "text": "hi Elzero",
-      "postId": "15dc"
+      "text": "asfs",
+      "id": "62d5"
     },
     {
-      "id": "7f0e",
-      "text": "hi Ahmed",
-      "postId": "abfa"
-    },
-    {
-      "id": "e054",
-      "text": "hi Sayed",
-      "postId": "abfa"
-    },
-    {
-      "id": "6be3",
-      "text": "hi Ah",
-      "postId": "19dd"
-    },
-    {
-      "id": "c2a9",
-      "text": "hi 500",
-      "postId": "16b0"
+      "text": "safff",
+      "id": "1313"
     }
   ],
   "profile": {
