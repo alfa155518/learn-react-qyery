@@ -1,6 +1,9 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
-import { createPost, getComments, getPost, createComment } from "./action/posts"
+import { createPost, getComments, getPost, createComment, updatePost, deletePost, updateComment, deleteComment } from "./action/posts"
+import PostForm from "./components/PostForm"
+import PostCard from "./components/PostCard"
+import PostsContainer from "./components/PostsContainer"
 import "./App.css"
 
 
@@ -10,6 +13,11 @@ export default function App() {
   const [newPostViews, setNewPostViews] = useState("")
   const [newCommentText, setNewCommentText] = useState("")
   const [selectedPostId, setSelectedPostId] = useState(null)
+  const [editingPostId, setEditingPostId] = useState(null)
+  const [editingCommentId, setEditingCommentId] = useState(null)
+  const [editPostTitle, setEditPostTitle] = useState("")
+  const [editPostViews, setEditPostViews] = useState("")
+  const [editCommentText, setEditCommentText] = useState("")
   const queryClient = useQueryClient()
 
 
@@ -44,19 +52,70 @@ export default function App() {
     onSuccess: () => {
       setNewCommentText("")
       setSelectedPostId(null)
-      // queryClient.invalidateQueries({
-      //   queryKey: ['ClientPosts']
-      // })
       queryClient.invalidateQueries({
         queryKey: ['ClientPosts'],
         exact: true,
       })
-      // queryClient.invalidateQueries({
-      //   queryKey: ['ClientPosts', { type: 'done' }],
-      // })
     },
     onError: (error) => {
       alert('Error creating comment: ' + error.message);
+    },
+  })
+
+  const updatePostMutation = useMutation({
+    mutationFn: ({ id, post }) => updatePost(id, post),
+    onSuccess: () => {
+      setEditingPostId(null)
+      setEditPostTitle("")
+      setEditPostViews("")
+      queryClient.invalidateQueries({
+        queryKey: ['ClientPosts'],
+        exact: true,
+      })
+    },
+    onError: (error) => {
+      alert('Error updating post: ' + error.message);
+    },
+  })
+
+  const deletePostMutation = useMutation({
+    mutationFn: deletePost,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['ClientPosts'],
+        exact: true,
+      })
+    },
+    onError: (error) => {
+      alert('Error deleting post: ' + error.message);
+    },
+  })
+
+  const updateCommentMutation = useMutation({
+    mutationFn: ({ id, comment }) => updateComment(id, comment),
+    onSuccess: () => {
+      setEditingCommentId(null)
+      setEditCommentText("")
+      queryClient.invalidateQueries({
+        queryKey: ['ClientPosts'],
+        exact: true,
+      })
+    },
+    onError: (error) => {
+      alert('Error updating comment: ' + error.message);
+    },
+  })
+
+  const deleteCommentMutation = useMutation({
+    mutationFn: deleteComment,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['ClientPosts'],
+        exact: true,
+      })
+    },
+    onError: (error) => {
+      alert('Error deleting comment: ' + error.message);
     },
   })
 
@@ -82,6 +141,54 @@ export default function App() {
     }
   }
 
+  const handleEditPost = (post) => {
+    setEditingPostId(post.id)
+    setEditPostTitle(post.title)
+    setEditPostViews(post.views.toString())
+  }
+
+  const handleUpdatePost = (e) => {
+    e.preventDefault()
+    if (editPostTitle.trim() && editPostViews.trim() && editingPostId) {
+      updatePostMutation.mutate({
+        id: editingPostId,
+        post: {
+          title: editPostTitle,
+          views: parseInt(editPostViews)
+        }
+      });
+    }
+  }
+
+  const handleDeletePost = (postId) => {
+    if (window.confirm('Are you sure you want to delete this post?')) {
+      deletePostMutation.mutate(postId);
+    }
+  }
+
+  const handleEditComment = (comment) => {
+    setEditingCommentId(comment.id)
+    setEditCommentText(comment.text)
+  }
+
+  const handleUpdateComment = (e) => {
+    e.preventDefault()
+    if (editCommentText.trim() && editingCommentId) {
+      updateCommentMutation.mutate({
+        id: editingCommentId,
+        comment: {
+          text: editCommentText
+        }
+      });
+    }
+  }
+
+  const handleDeleteComment = (commentId) => {
+    if (window.confirm('Are you sure you want to delete this comment?')) {
+      deleteCommentMutation.mutate(commentId);
+    }
+  }
+
   const getCommentsForPost = (postId) => {
     return commentData?.filter(comment => comment.postId === postId) || []
   }
@@ -99,100 +206,58 @@ export default function App() {
     <div className="app">
       <h1>React Query Course</h1>
 
-      <form onSubmit={handleSubmit} className="post-form">
-        <h2>Create New Post</h2>
-        <div className="form-group">
-          <input
-            type="text"
-            placeholder="Enter post title"
-            value={newPostTitle}
-            onChange={(e) => setNewPostTitle(e.target.value)}
-            className="form-input"
-          />
-        </div>
-        <div className="form-group">
-          <input
-            type="number"
-            placeholder="Enter views"
-            value={newPostViews}
-            onChange={(e) => setNewPostViews(e.target.value)}
-            className="form-input"
-          />
-        </div>
-        <button
-          type="submit"
-          disabled={isPending}
-          className="submit-btn"
-        >
-          {isPending ? 'Creating...' : 'Create Post'}
-        </button>
-        {mutationIsError && (
-          <div className="error">Error creating post. Please try again.</div>
-        )}
-        {isSuccess && (
-          <div className="success">Post created successfully!</div>
-        )}
-      </form>
+      <PostForm
+        newPostTitle={newPostTitle}
+        newPostViews={newPostViews}
+        setNewPostTitle={setNewPostTitle}
+        setNewPostViews={setNewPostViews}
+        handleSubmit={handleSubmit}
+        isPending={isPending}
+        isError={mutationIsError}
+        isSuccess={isSuccess}
+      />
 
-      <div className="posts-container">
-        <h2>Posts ({data?.length || 0})</h2>
-        {data?.length === 0 ? (
-          <div className="no-posts">No posts available</div>
-        ) : (
-          <div className="posts-grid">
-            {data.map(post => {
-              const postComments = getCommentsForPost(post.id)
-              return (
-                <div key={post.id} className="post-card">
-                  <h3 className="post-title">{post.title}</h3>
-                  <div className="post-views">{post.views} views</div>
-                  <div className="post-comments">
-                    <div className="comments-header">
-                      <span className="comments-count">{postComments.length} comments</span>
-                      <button
-                        onClick={() => setSelectedPostId(selectedPostId === post.id ? null : post.id)}
-                        className="add-comment-btn"
-                      >
-                        {selectedPostId === post.id ? 'Cancel' : 'Add Comment'}
-                      </button>
-                    </div>
-
-                    {selectedPostId === post.id && (
-                      <form onSubmit={handleCommentSubmit} className="comment-form">
-                        <input
-                          type="text"
-                          placeholder="Write a comment..."
-                          value={newCommentText}
-                          onChange={(e) => setNewCommentText(e.target.value)}
-                          className="comment-input"
-                        />
-                        <button
-                          type="submit"
-                          disabled={commentMutation.isPending}
-                          className="comment-submit-btn"
-                        >
-                          {commentMutation.isPending ? 'Posting...' : 'Post'}
-                        </button>
-                      </form>
-                    )}
-
-                    {postComments.length > 0 && (
-                      <div className="comments-list">
-                        {postComments.map(comment => (
-                          <div key={comment.id} className="comment-item">
-                            <p className="comment-text">{comment.text}</p>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        )}
-      </div>
-
+      <PostsContainer posts={data} commentData={commentData}>
+        {data?.map(post => {
+          const postComments = getCommentsForPost(post.id)
+          return (
+            <PostCard
+              key={post.id}
+              post={post}
+              comments={postComments}
+              onEditPost={handleEditPost}
+              onDeletePost={handleDeletePost}
+              onAddComment={commentMutation}
+              onEditComment={handleEditComment}
+              onDeleteComment={handleDeleteComment}
+              editingPostId={editingPostId}
+              editingCommentId={editingCommentId}
+              editPostTitle={editPostTitle}
+              editPostViews={editPostViews}
+              editCommentText={editCommentText}
+              setEditPostTitle={setEditPostTitle}
+              setEditPostViews={setEditPostViews}
+              setEditCommentText={setEditCommentText}
+<<<<<<< E:\learn-react-query\src\App.jsx
+=======
+              setEditingPostId={setEditingPostId}
+              setEditingCommentId={setEditingCommentId}
+>>>>>>> c:\Users\PC\.windsurf\worktrees\learn-react-query\learn-react-query-881784d5\src\App.jsx
+              updatePostMutation={updatePostMutation}
+              deletePostMutation={deletePostMutation}
+              updateCommentMutation={updateCommentMutation}
+              deleteCommentMutation={deleteCommentMutation}
+              selectedPostId={selectedPostId}
+              setSelectedPostId={setSelectedPostId}
+              newCommentText={newCommentText}
+              setNewCommentText={setNewCommentText}
+              handleUpdatePost={handleUpdatePost}
+              handleUpdateComment={handleUpdateComment}
+              handleCommentSubmit={handleCommentSubmit}
+            />
+          )
+        })}
+      </PostsContainer>
     </div>
   )
 }

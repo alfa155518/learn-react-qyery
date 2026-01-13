@@ -277,6 +277,125 @@ h2 {
   border: 1px dashed #d1d5db;
 }
 
+<<<<<<< E:\learn-react-query\src\App.css
+=======
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.post-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.edit-btn,
+.delete-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background-color 0.2s, transform 0.1s;
+  font-size: 14px;
+}
+
+.edit-btn:hover {
+  background-color: #fbbf24;
+  transform: scale(1.1);
+}
+
+.delete-btn:hover {
+  background-color: #f87171;
+  transform: scale(1.1);
+}
+
+.edit-post-form {
+  background: #f8fafc;
+  padding: 20px;
+  border-radius: 8px;
+  border: 2px solid #3b82f6;
+  margin-bottom: 15px;
+}
+
+.edit-comment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: #f8fafc;
+  border-radius: 6px;
+  border: 2px solid #3b82f6;
+}
+
+.edit-buttons {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.save-btn {
+  background-color: #10b981;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.save-btn:hover:not(:disabled) {
+  background-color: #059669;
+  transform: translateY(-1px);
+}
+
+.save-btn:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.cancel-btn {
+  background-color: #6b7280;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+.cancel-btn:hover {
+  background-color: #4b5563;
+  transform: translateY(-1px);
+}
+
+.comment-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.comment-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.comment-actions .edit-btn,
+.comment-actions .delete-btn {
+  font-size: 12px;
+  padding: 2px;
+}
+
+>>>>>>> c:\Users\PC\.windsurf\worktrees\learn-react-query\learn-react-query-881784d5\src\App.css
 @media (max-width: 768px) {
   .app {
     padding: 10px;
@@ -294,4 +413,25 @@ h2 {
   h1 {
     font-size: 2rem;
   }
+<<<<<<< E:\learn-react-query\src\App.css
+=======
+
+  .post-header {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .post-actions {
+    align-self: flex-end;
+  }
+
+  .comment-content {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .comment-actions {
+    align-self: flex-end;
+  }
+>>>>>>> c:\Users\PC\.windsurf\worktrees\learn-react-query\learn-react-query-881784d5\src\App.css
 }
